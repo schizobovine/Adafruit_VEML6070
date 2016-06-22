@@ -25,6 +25,11 @@
 #define VEML6070_ADDR_H 0x39
 #define VEML6070_ADDR_L 0x38
 
+// Lookup constants based on integration time
+#define VEML6070_UVI_PER_CNT_1T 0.00535385050099642
+#define VEML6070_UVI_PER_CNT_2T 0.00267696481585348
+#define VEML6070_UVI_PER_CNT_4T 0.00133861950364348
+
 // three different integration times
 typedef enum veml6070_integrationtime {
   VEML6070_HALF_T,
@@ -33,12 +38,15 @@ typedef enum veml6070_integrationtime {
   VEML6070_4_T,
 } veml6070_integrationtime_t;
 
-
 class Adafruit_VEML6070 {
  public:
   Adafruit_VEML6070() {};
 
   void begin(veml6070_integrationtime_t itime);
   uint16_t readUV(void);
+  float getUVIndex(veml6070_integrationtime_t itime, uint16_t reading);
+  float getUVIndex(uint16_t reading);
+  float getUVIndex();
  private:
+  veml6070_integrationtime_t it = VEML6070_1_T;
 };

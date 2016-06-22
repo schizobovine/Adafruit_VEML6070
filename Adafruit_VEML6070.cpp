@@ -25,6 +25,7 @@
 
 
 void Adafruit_VEML6070::begin(veml6070_integrationtime_t itime) {
+  this->it = itime;
   Wire.begin();
   Wire.beginTransmission(VEML6070_ADDR_L);
   Wire.write((itime << 2) | 0x02);
@@ -42,3 +43,28 @@ uint16_t Adafruit_VEML6070::readUV() {
   return uvi;  
 }
 
+float Adafruit_VEML6070::getUVIndex(veml6070_integrationtime_t itime, uint16_t reading) {
+  switch (itime) {
+
+    // Reading to UV index based on integration time
+    case VEML6070_1_T:
+      return VEML6070_UVI_PER_CNT_1T * reading;
+    case VEML6070_2_T:
+      return VEML6070_UVI_PER_CNT_2T * reading;
+    case VEML6070_4_T:
+      return VEML6070_UVI_PER_CNT_4T * reading;
+
+    // Sadly, values for this one weren't in the app note...
+    case VEML6070_HALF_T:
+    default:
+      return -1.0;
+  }
+}
+
+float Adafruit_VEML6070::getUVIndex(uint16_t reading) {
+  return this->getUVIndex(this->it, reading);
+}
+
+float Adafruit_VEML6070::getUVIndex() {
+  return this->getUVIndex(this->it, this->readUV());
+}
